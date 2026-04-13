@@ -30,10 +30,8 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
-# ML Models (optional - if large)
-*.pkl
-*.joblib
+
 
 # Kaggle data
-*.csv
+
 *.zip
