@@ -6,4 +6,6 @@ urlpatterns = [
     path("heart/", views.heart, name="heart"),
     path("diabetes/", views.diabetes, name="diabetes"),
     path("stress/", views.stress, name="stress"),
+    path("live-ai/", views.live_ai, name="live_ai"),
+    path("live-ai/message/", views.live_ai_message, name="live_ai_message"),
 ]

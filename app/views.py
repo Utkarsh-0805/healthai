@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
+from .ai import chat_with_ai
 from .utils import (
     build_heart_input,
     build_diabetes_input,
@@ -69,6 +72,18 @@ def diabetes(request):
         },
     )
 
+def live_ai(request):
+    return render(request, "chat.html")
+
+
+@require_POST
+def live_ai_message(request):
+    prompt = request.POST.get("message", "").strip()
+    if not prompt:
+        return JsonResponse({"error": "Please enter a message."}, status=400)
+
+    answer = chat_with_ai(prompt)
+    return JsonResponse({"message": answer})
 
 def stress(request):
     result = None

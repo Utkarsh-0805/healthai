@@ -229,6 +229,99 @@ function prepareHeartForm() {
     return true;
 }
 
+function initChat() {
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("chatInput");
+    const log = document.getElementById("chatLog");
+    const overlay = document.getElementById("chatOverlay");
+    const openButton = document.getElementById("openChatButton");
+    const closeButton = document.getElementById("closeChatButton");
+
+    if (!form || !input || !log || !overlay || !openButton || !closeButton) return;
+
+    const appendMessage = (sender, text, role) => {
+        const item = document.createElement("div");
+        item.className = `chat-message ${role}`;
+        item.innerHTML = `<span class="chat-sender">${sender}</span><p>${text}</p>`;
+        log.appendChild(item);
+        log.scrollTop = log.scrollHeight;
+    };
+
+    const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]')?.value || "";
+
+    const openChat = () => {
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+        input.focus();
+    };
+
+    const closeChat = () => {
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+    };
+
+    openButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        openChat();
+    });
+
+    closeButton.addEventListener("click", closeChat);
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closeChat();
+        }
+    });
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+
+        appendMessage("You", message, "user");
+        input.value = "";
+
+        const loadingMessage = document.createElement("div");
+        loadingMessage.className = "chat-message assistant loading";
+        loadingMessage.innerHTML = `<span class="chat-sender">AI</span><p>Thinking...</p>`;
+        log.appendChild(loadingMessage);
+        log.scrollTop = log.scrollHeight;
+
+        try {
+            const formData = new FormData();
+            formData.append("message", message);
+            formData.append("csrfmiddlewaretoken", csrfToken);
+
+            const response = await fetch("/live-ai/message/", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await response.json();
+
+            if (response.ok && data.message) {
+                loadingMessage.innerHTML = `<span class="chat-sender">AI</span><p>${data.message}</p>`;
+                loadingMessage.classList.remove("loading");
+            } else {
+                loadingMessage.innerHTML = `<span class="chat-sender">AI</span><p>${data.error || "Unable to get an answer."}</p>`;
+                loadingMessage.classList.remove("loading");
+            }
+        } catch (error) {
+            loadingMessage.innerHTML = `<span class="chat-sender">AI</span><p>Network error. Please try again.</p>`;
+            loadingMessage.classList.remove("loading");
+        }
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    initChat();
+});
+
 function resetStressHiddenFields() {
     const hiddenFields = document.querySelectorAll('input[type="hidden"][data-auto="stress"]');
     hiddenFields.forEach((input) => {

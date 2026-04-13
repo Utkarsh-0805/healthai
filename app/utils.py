@@ -217,7 +217,7 @@ def local_advice(condition, risk_percent, main_value):
 def get_advice(condition, risk_percent, main_value):
     fallback = local_advice(condition, risk_percent, main_value)
 
-    api_key = getattr(settings, "NVIDIA_API_KEY", None)
+    api_key = os.getenv("NVIDIA_API_KEY") or getattr(settings, "NVIDIA_API_KEY", None)
     if not api_key or OpenAI is None:
         return fallback
 

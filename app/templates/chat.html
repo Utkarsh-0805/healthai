@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="chat-page">
+    <div class="chat-card">
+        <h1>Chat With Health Plus</h1>
+        <p>Ask anything about wellness, stress, heart health, nutrition, or healthy habits. The AI assistant will answer with friendly health guidance.</p>
+
+        <div id="chatLog" class="chat-log">
+            <div class="chat-message assistant">
+                <span class="chat-sender">Health Plus</span>
+                <p>Hello! I’m your health assistant. What would you like to know today?</p>
+            </div>
+        </div>
+
+        <form id="chatForm" method="post">
+            {% csrf_token %}
+            <textarea id="chatInput" name="message" placeholder="Type your question here..."></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
