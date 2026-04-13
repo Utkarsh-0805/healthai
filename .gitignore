@@ -14,8 +14,7 @@ env/
 db.sqlite3
 media/
 
-# Static files (optional if collected)
-staticfiles/
+
 
 # Environment variables
 .env
